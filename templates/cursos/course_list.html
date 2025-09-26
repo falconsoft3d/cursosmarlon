@@ -1,0 +1,302 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+{% if search_query %}
+Resultados para "{{ search_query }}" - CursosMarlon
+{% else %}
+Todos los Cursos - CursosMarlon
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">
+                {% if search_query %}
+                    Resultados para "{{ search_query }}"
+                {% elif selected_category %}
+                    Cursos de {{ selected_category|title }}
+                {% else %}
+                    Todos los Cursos
+                {% endif %}
+            </h1>
+            <p class="text-muted">{{ page_obj.paginator.count }} curso{{ page_obj.paginator.count|pluralize }} encontrado{{ page_obj.paginator.count|pluralize }}</p>
+        </div>
+        <div class="col-md-4">
+            <!-- Search Form -->
+            <form method="GET" class="d-flex">
+                <input type="text" class="form-control me-2" name="search" 
+                       placeholder="Buscar cursos..." value="{{ search_query }}">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">Filtros</h6>
+                    
+                    <!-- Categories Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Categorías</h6>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'course_list' %}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if not selected_category %}active{% endif %}">
+                                Todas las categorías
+                            </a>
+                            {% for category in categories %}
+                            <a href="{% url 'course_list' %}?category={{ category.slug }}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if selected_category == category.slug %}active{% endif %}">
+                                {{ category.name }}
+                                <small class="text-muted">({{ category.courses.count }})</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Difficulty Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Nivel de Dificultad</h6>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'course_list' %}{% if selected_category %}?category={{ selected_category }}{% endif %}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if not selected_difficulty %}active{% endif %}">
+                                Todos los niveles
+                            </a>
+                            <a href="{% url 'course_list' %}?difficulty=beginner{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if selected_difficulty == 'beginner' %}active{% endif %}">
+                                Principiante
+                            </a>
+                            <a href="{% url 'course_list' %}?difficulty=intermediate{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if selected_difficulty == 'intermediate' %}active{% endif %}">
+                                Intermedio
+                            </a>
+                            <a href="{% url 'course_list' %}?difficulty=advanced{% if selected_category %}&category={{ selected_category }}{% endif %}" 
+                               class="list-group-item list-group-item-action border-0 px-0 {% if selected_difficulty == 'advanced' %}active{% endif %}">
+                                Avanzado
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Clear Filters -->
+                    {% if selected_category or selected_difficulty or search_query %}
+                    <div class="mb-3">
+                        <a href="{% url 'course_list' %}" class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="fas fa-times me-2"></i>Limpiar Filtros
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Grid -->
+        <div class="col-lg-9">
+            {% if page_obj %}
+            <div class="row">
+                {% for course in page_obj %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm course-card">
+                        <div class="position-relative">
+                       <img src="{% if course.thumbnail %}{{ course.thumbnail.url }}{% else %}{% static 'img/default_course.png' %}{% endif %}" 
+                           class="card-img-top course-thumbnail" alt="{{ course.title }}">
+                            
+                            <!-- Course Level Badge -->
+                            <span class="badge bg-secondary position-absolute top-0 end-0 m-2">
+                                {{ course.difficulty|capfirst }}
+                            </span>
+                            
+                            <!-- Discount Badge -->
+                            {% if course.has_discount %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                -{{ course.discount_percentage }}%
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <!-- Category -->
+                            <span class="badge bg-primary mb-2 align-self-start">{{ course.category.name }}</span>
+                            
+                            <!-- Title -->
+                            <h5 class="card-title">
+                                <a href="{% url 'course_detail' course.slug %}" class="text-decoration-none text-dark">
+                                    {{ course.title }}
+                                </a>
+                            </h5>
+                            
+                            <!-- Description -->
+                            <p class="card-text text-muted">{{ course.short_description|truncatechars:100 }}</p>
+                            
+                            <!-- Instructor -->
+                            <div class="d-flex align-items-center mb-3">
+                          <img src="{% if course.instructor.avatar %}{{ course.instructor.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                              class="rounded-circle me-2" width="30" height="30">
+                                <small class="text-muted">{{ course.instructor.full_name }}</small>
+                            </div>
+                            
+                            <!-- Rating (placeholder) -->
+                            <div class="mb-3">
+                                <div class="rating-stars text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <small class="text-muted ms-1">(4.5)</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- Price or Free -->
+                                    <div>
+                                        {% if course.is_free %}
+                                            <span class="badge bg-success" style="font-size:1rem;">Gratis</span>
+                                        {% elif course.has_discount %}
+                                            <span class="h5 text-primary mb-0">${{ course.final_price }}</span>
+                                            <small class="text-muted text-decoration-line-through ms-1">${{ course.price }}</small>
+                                        {% else %}
+                                            <span class="h5 text-primary mb-0">${{ course.price }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Action Button -->
+                                    <a href="{% url 'course_detail' course.slug %}" class="btn btn-primary btn-sm">
+                                        Ver Curso
+                                    </a>
+                                </div>
+                                
+                                <!-- Duration -->
+                                <div class="text-muted mt-2">
+                                    <small>
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ course.duration_hours }} hora{{ course.duration_hours|pluralize }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación de cursos" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- No Results -->
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-5x text-muted mb-4"></i>
+                <h3>No se encontraron cursos</h3>
+                <p class="text-muted">
+                    {% if search_query %}
+                        No encontramos cursos que coincidan con "{{ search_query }}"
+                    {% else %}
+                        No hay cursos disponibles con los filtros seleccionados
+                    {% endif %}
+                </p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary">Ver Todos los Cursos</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add to Cart Script -->
+<script>
+function quickAddToCart(courseId) {
+    {% if user.is_authenticated %}
+    fetch('/api/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            course_id: courseId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al añadir al carrito');
+    });
+    {% else %}
+    window.location.href = "{% url 'login' %}";
+    {% endif %}
+}
+</script>
+{% endblock %}

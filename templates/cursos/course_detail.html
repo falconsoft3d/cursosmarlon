@@ -1,0 +1,259 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - CursosMarlon{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Course Header -->
+            <div class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Cursos</a></li>
+                        <li class="breadcrumb-item active">{{ course.title }}</li>
+                    </ol>
+                </nav>
+                
+                <span class="badge bg-primary mb-2">{{ course.category.name }}</span>
+                <h1 class="fw-bold">{{ course.title }}</h1>
+                <p class="lead">{{ course.short_description }}</p>
+                
+                <div class="d-flex align-items-center text-muted mb-3">
+                <img src="{% if course.instructor.avatar %}{{ course.instructor.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                    class="rounded-circle me-2" width="40" height="40">
+                    <span>Por {{ course.instructor.full_name }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ course.duration_hours }} horas</span>
+                    <span class="mx-2">•</span>
+                    <span class="badge bg-secondary">{{ course.difficulty|capfirst }}</span>
+                </div>
+            </div>
+            
+            <!-- Video Preview -->
+            {% if course.video_preview %}
+            <div class="mb-4">
+                <div class="video-container">
+                    {% if course.thumbnail %}
+                        <video controls poster="{{ course.thumbnail.url }}">
+                    {% else %}
+                        <video controls poster="{% static 'img/default_course.png' %}">
+                    {% endif %}
+                        <source src="{{ course.video_preview.url }}" type="video/mp4">
+                        Tu navegador no soporta el elemento video.
+                    </video>
+                </div>
+            </div>
+            {% else %}
+            <div class="mb-4">
+                {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" alt="{{ course.title }}">
+                {% else %}
+                    <img src="{% static 'img/default_course.png' %}" class="img-fluid rounded" alt="Sin imagen">
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Course Content -->
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="courseTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button">
+                                Descripción
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button">
+                                Contenido
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                                Reseñas
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content pt-4" id="courseTabContent">
+                        <!-- Overview -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>Acerca de este curso</h4>
+                                    <p>{{ course.description|linebreaks }}</p>
+                                    
+                                    <h5 class="mt-4">Qué aprenderás</h5>
+                                    <div class="mb-4">
+                                        {{ course.what_you_learn|linebreaks }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>Requisitos</h5>
+                                    <div class="text-muted">
+                                        {{ course.requirements|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Curriculum -->
+                        <div class="tab-pane fade" id="curriculum" role="tabpanel">
+                            <h4>Contenido del curso</h4>
+                            <p class="text-muted mb-4">{{ modules.count }} módulo{{ modules.count|pluralize }} • {{ course.duration_hours }} horas</p>
+                            
+                            {% for module in modules %}
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <button class="btn btn-link text-decoration-none p-0 fw-bold" 
+                                                type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#module{{ module.id }}">
+                                            Módulo {{ forloop.counter }}: {{ module.title }}
+                                        </button>
+                                    </h6>
+                                </div>
+                                <div id="module{{ module.id }}" class="collapse">
+                                    <div class="card-body">
+                                        <p class="text-muted">{{ module.description }}</p>
+                                        <ul class="list-unstyled">
+                                            {% for lesson in module.lessons.all %}
+                                            <li class="d-flex align-items-center py-2">
+                                                <i class="fas fa-play-circle text-primary me-2"></i>
+                                                {{ lesson.title }}
+                                                {% if lesson.is_free %}
+                                                    <span class="badge bg-success ms-2">Gratis</span>
+                                                {% endif %}
+                                                <small class="text-muted ms-auto">{{ lesson.duration_minutes }} min</small>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Reviews -->
+                        <div class="tab-pane fade" id="reviews" role="tabpanel">
+                            <h4>Reseñas de estudiantes</h4>
+                            {% for review in reviews %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                <img src="{% if review.student.avatar %}{{ review.student.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" 
+                                    class="rounded-circle me-3" width="50" height="50">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ review.student.full_name }}</h6>
+                                            <div class="rating-stars mb-2">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= review.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <p class="mb-0">{{ review.comment }}</p>
+                                            <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">Aún no hay reseñas para este curso.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow course-sidebar position-sticky" style="top: 100px;">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            {% if course.has_discount %}
+                                <h3 class="text-primary mb-0">${{ course.final_price }}</h3>
+                                <small class="text-muted text-decoration-line-through">${{ course.price }}</small>
+                            {% else %}
+                                <h3 class="text-primary mb-0">${{ course.price }}</h3>
+                            {% endif %}
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                            {% if is_enrolled %}
+                                <a href="{% url 'course_player' course.slug %}" class="btn btn-success btn-lg w-100 mb-3">
+                                    <i class="fas fa-play me-2"></i>Continuar Curso
+                                </a>
+                            {% else %}
+                                <button onclick="addToCart({{ course.id }})" class="btn btn-primary btn-lg w-100 mb-3">
+                                    <i class="fas fa-shopping-cart me-2"></i>Añadir al Carrito
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100 mb-3">
+                                Iniciar Sesión para Comprar
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="course-includes">
+                        <h6 class="fw-bold mb-3">Este curso incluye:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-video text-primary me-2"></i>
+                                {{ course.duration_hours }} horas de video
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-mobile-alt text-primary me-2"></i>
+                                Acceso en dispositivos móviles
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-infinity text-primary me-2"></i>
+                                Acceso de por vida
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-certificate text-primary me-2"></i>
+                                Certificado de finalización
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addToCart(courseId) {
+    fetch('/api/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            course_id: courseId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Curso añadido al carrito');
+            location.reload();
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al añadir al carrito');
+    });
+}
+</script>
+{% endblock %}

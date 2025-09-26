@@ -1,0 +1,74 @@
+{% extends 'base/base.html' %}
+{% block title %}Crear/Editar Módulo{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">{{ form.instance.pk|yesno:"Editar Módulo,Crear Módulo" }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_course" class="form-label">Curso</label>
+            {{ form.course }}
+        </div>
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Título</label>
+            {{ form.title }}
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Descripción</label>
+            {{ form.description }}
+        </div>
+        <div class="mb-3">
+            <label for="id_order" class="form-label">Orden</label>
+            {{ form.order }}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+{% extends 'base/base.html' %}
+{% block title %}Crear/Editar Módulo{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        {% include 'cursos/_dashboard_sidebar.html' %}
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4">{{ form.instance.pk|yesno:"Editar Módulo,Crear Módulo" }}</h2>
+                    {% if form.instance.thumbnail %}
+                        <img src="{{ form.instance.thumbnail.url }}" width="80" height="80" class="rounded mb-3" style="object-fit:cover;">
+                    {% else %}
+                        <img src="{% static 'img/default_class.png' %}" width="80" height="80" class="rounded mb-3" style="object-fit:cover;">
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_course" class="form-label">Curso</label>
+                                {{ form.course }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_title" class="form-label">Título</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-12">
+                                <label for="id_description" class="form-label">Descripción</label>
+                                {{ form.description }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_order" class="form-label">Orden</label>
+                                {{ form.order }}
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

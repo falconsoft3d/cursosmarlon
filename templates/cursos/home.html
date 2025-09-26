@@ -1,0 +1,163 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}CursosMarlon - Aprende con los mejores cursos online{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Aprende las tecnologías del futuro
+                </h1>
+                <p class="lead mb-4">
+                    Descubre cursos de programación, desarrollo web, inteligencia artificial y más. 
+                    Con instructores expertos y contenido actualizado.
+                </p>
+                <a href="{% url 'course_list' %}" class="btn btn-light btn-lg">
+                    Explorar Cursos <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{% static 'img/default_course.png' %}" alt="Aprendizaje online" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses -->
+{% if featured_courses %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Cursos Destacados</h2>
+            <p class="text-muted">Los cursos más populares y mejor valorados</p>
+        </div>
+        
+        <div class="row">
+            {% for course in featured_courses %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'img/default_course.png' %}" class="card-img-top" alt="Sin imagen" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-primary mb-2">{{ course.category.name }}</span>
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text text-muted">{{ course.short_description }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">Por {{ course.instructor.full_name }}</small>
+                                <span class="badge bg-secondary">{{ course.difficulty|capfirst }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if course.is_free %}
+                                        <span class="badge bg-success" style="font-size:1rem;">Gratis</span>
+                                    {% elif course.has_discount %}
+                                        <span class="h5 text-primary">${{ course.final_price }}</span>
+                                        <small class="text-muted text-decoration-line-through">${{ course.price }}</small>
+                                    {% else %}
+                                        <span class="h5 text-primary">${{ course.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'course_detail' course.slug %}" class="btn btn-primary btn-sm">Ver Curso</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'course_list' %}" class="btn btn-outline-primary">Ver Todos los Cursos</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories -->
+{% if categories %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Categorías Populares</h2>
+            <p class="text-muted">Encuentra el área de conocimiento que más te interese</p>
+        </div>
+        
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <a href="{% url 'course_list' %}?category={{ category.slug }}" class="text-decoration-none">
+                    <div class="card text-center h-100 shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-{{ category.icon|default:'book' }} fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text text-muted">{{ category.courses.count }} curso{{ category.courses.count|pluralize }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Latest Courses -->
+{% if latest_courses %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Últimos Cursos</h2>
+            <p class="text-muted">Mantente al día con nuestro contenido más reciente</p>
+        </div>
+        
+        <div class="row">
+            {% for course in latest_courses %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'img/default_course.png' %}" class="card-img-top" alt="Sin imagen" style="height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">{{ course.category.name }}</span>
+                        <h6 class="card-title">{{ course.title|truncatechars:50 }}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            {% if course.is_free %}
+                                <span class="badge bg-success" style="font-size:1rem;">Gratis</span>
+                            {% else %}
+                                <span class="h6 text-primary">${{ course.final_price }}</span>
+                            {% endif %}
+                            <a href="{% url 'course_detail' course.slug %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">¿Listo para empezar tu aprendizaje?</h2>
+        <p class="lead mb-4">Únete a miles de estudiantes que ya están transformando su carrera</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg me-3">Registrarse Gratis</a>
+            <a href="{% url 'course_list' %}" class="btn btn-outline-light btn-lg">Explorar Cursos</a>
+        {% else %}
+            <a href="{% url 'course_list' %}" class="btn btn-light btn-lg">Explorar Cursos</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

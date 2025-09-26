@@ -1,0 +1,102 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Carrito de Compras - CursosMarlon{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Carrito de Compras</h1>
+    
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for item in cart_items %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img src="{% if item.course.thumbnail %}{{ item.course.thumbnail.url }}{% else %}{% static 'img/default_course.png' %}{% endif %}" class="img-fluid rounded" alt="{{ item.course.title }}">
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">{{ item.course.title }}</h5>
+                            <p class="text-muted">Por {{ item.course.instructor.full_name }}</p>
+                            <span class="badge bg-primary">{{ item.course.category.name }}</span>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <h5 class="text-primary">${{ item.course.final_price }}</h5>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button onclick="removeFromCart({{ item.course.id }})" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen de Compra</h5>
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>${{ cart.total_amount }}</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong class="text-primary">${{ cart.total_amount }}</strong>
+                    </div>
+                    
+                    <a href="{% url 'checkout' %}" class="btn btn-primary w-100 btn-lg">
+                        Proceder al Pago
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+        <h3>Tu carrito está vacío</h3>
+        <p class="text-muted">Explora nuestros cursos y encuentra el perfecto para ti</p>
+        <a href="{% url 'course_list' %}" class="btn btn-primary">Explorar Cursos</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function removeFromCart(courseId) {
+    if (confirm('¿Estás seguro de que quieres remover este curso del carrito?')) {
+        fetch('/payments/api/remove-from-cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                course_id: courseId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al remover del carrito');
+        });
+    }
+}
+</script>
+{% endblock %}

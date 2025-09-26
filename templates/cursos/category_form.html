@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ category|default:'Nueva Categoría' }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">{{ category|default:'Nueva Categoría' }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
+        <div class="mb-3">
+            {{ form.icon.label_tag }}
+            {{ form.icon }}
+        </div>
+        <div class="form-check mb-3">
+            {{ form.is_active }} {{ form.is_active.label_tag }}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'category_list_admin' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

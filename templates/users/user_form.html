@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% block title %}Agregar Usuario{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'cursos/_dashboard_sidebar.html' %}
+        </div>
+        <div class="col-md-9">
+            <h2 class="mb-4">Agregar Usuario</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                </div>
+                <div class="mb-3">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                </div>
+                <div class="mb-3">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <div class="form-check mb-3">
+                    {{ form.is_instructor }} {{ form.is_instructor.label_tag }}
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

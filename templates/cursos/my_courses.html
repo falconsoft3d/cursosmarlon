@@ -1,0 +1,80 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Mis Cursos - CursosMarlon{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="fw-bold mb-4">Mis Cursos</h1>
+            
+            {% if enrollments %}
+            <div class="row">
+                {% for enrollment in enrollments %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ enrollment.course.thumbnail.url }}" class="card-img-top" alt="{{ enrollment.course.title }}" style="height: 200px; object-fit: cover;">
+                            
+                            <!-- Progress Badge -->
+                            <span class="badge bg-success position-absolute top-0 end-0 m-2">
+                                {{ enrollment.progress }}% completado
+                            </span>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge bg-primary mb-2 align-self-start">{{ enrollment.course.category.name }}</span>
+                            <h5 class="card-title">{{ enrollment.course.title }}</h5>
+                            <p class="card-text text-muted">{{ enrollment.course.short_description|truncatechars:100 }}</p>
+                            
+                            <!-- Progress Bar -->
+                            <div class="mb-3">
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: {{ enrollment.progress }}%" 
+                                         aria-valuenow="{{ enrollment.progress }}" 
+                                         aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ enrollment.progress }}% completado</small>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">Inscrito: {{ enrollment.enrolled_at|date:"d M Y" }}</small>
+                                    {% if enrollment.completed_at %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Completado
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'course_player' enrollment.course.slug %}" class="btn btn-primary">
+                                        <i class="fas fa-play me-2"></i>Continuar Curso
+                                    </a>
+                                    <a href="{% url 'course_detail' enrollment.course.slug %}" class="btn btn-outline-secondary btn-sm">
+                                        Ver Detalles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% else %}
+            <!-- No Courses -->
+            <div class="text-center py-5">
+                <i class="fas fa-graduation-cap fa-5x text-muted mb-4"></i>
+                <h3>Aún no tienes cursos</h3>
+                <p class="text-muted">Explora nuestro catálogo y encuentra el curso perfecto para ti</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg">Explorar Cursos</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base/base.html' %}
+{% block title %}Estudiar Curso{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-3">{{ course.title }}</h2>
+            <p class="text-muted">{{ course.description }}</p>
+            {% if current_lesson %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Lección actual: {{ current_lesson.title }}</h4>
+                        <p>{{ current_lesson.content }}</p>
+                        {% if current_lesson.video_url %}
+                            <div class="ratio ratio-16x9 mb-3">
+                                <iframe src="{{ current_lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        {% elif current_lesson.video_file %}
+                            <video controls width="100%">
+                                <source src="{{ current_lesson.video_file.url }}" type="video/mp4">
+                                Tu navegador no soporta el video.
+                            </video>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">No hay lección seleccionada.</div>
+            {% endif %}
+        </div>
+        <div class="col-lg-4">
+            <h5 class="fw-bold">Módulos</h5>
+            <ul class="list-group mb-4">
+                {% for module in modules %}
+                    <li class="list-group-item">
+                        <strong>{{ module.title }}</strong>
+                        <ul class="list-unstyled ms-3">
+                            {% for lesson in module.lessons.all %}
+                                <li>
+                                    <a href="?lesson={{ lesson.id }}" class="text-decoration-none">
+                                        {{ lesson.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - CursosMarlon{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'cursos/_dashboard_sidebar.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block mb-3">
+                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}" class="rounded-circle" width="120" height="120" style="object-fit: cover;">
+                        </div>
+                        <h2 class="fw-bold">{{ user.full_name }}</h2>
+                        <p class="text-muted">{{ user.email }}</p>
+                        {% if user.is_instructor %}
+                            <span class="badge bg-primary">Instructor</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Estudiante</span>
+                        {% endif %}
+                    </div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row mb-4">
+                            <div class="col-12 text-center mb-3">
+                                <h4>Información Personal</h4>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Apellido</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                            <div class="form-text">El email no puede ser modificado</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="avatar" class="form-label">Foto de Perfil</label>
+                            <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                        </div>
+
+                        <div class="mb-4">
+                            <a href="{% url 'change_password' %}" class="btn btn-outline-danger">Cambiar contraseña</a>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="bio" class="form-label">Biografía</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                                      placeholder="Cuéntanos un poco sobre ti...">{{ user.bio }}</textarea>
+                        </div>
+                        
+                        <!-- Profile Information -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center mb-3">
+                                <h4>Información de Contacto</h4>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ profile.phone }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="country" class="form-label">País</label>
+                                <input type="text" class="form-control" id="country" name="country" 
+                                       value="{{ profile.country }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Ciudad</label>
+                            <input type="text" class="form-control" id="city" name="city" 
+                                   value="{{ profile.city }}">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="website" class="form-label">Sitio Web</label>
+                            <input type="url" class="form-control" id="website" name="website" 
+                                   value="{{ profile.website }}" placeholder="https://tu-sitio-web.com">
+                        </div>
+                        
+                        <!-- Social Links -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center mb-3">
+                                <h4>Redes Sociales</h4>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="linkedin" class="form-label">LinkedIn</label>
+                                <input type="url" class="form-control" id="linkedin" name="linkedin" 
+                                       value="{{ profile.linkedin }}" placeholder="https://linkedin.com/in/tu-perfil">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="twitter" class="form-label">Twitter</label>
+                                <input type="url" class="form-control" id="twitter" name="twitter" 
+                                       value="{{ profile.twitter }}" placeholder="https://twitter.com/tu-usuario">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Preview avatar before upload
+document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.querySelector('.rounded-circle').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

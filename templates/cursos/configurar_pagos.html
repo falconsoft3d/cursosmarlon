@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+{% block title %}Configurar Pagos{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Configurar Métodos de Pago</h2>
+    <p class="text-muted">Aquí podrás configurar tus métodos de pago para recibir tus ingresos como instructor.</p>
+    <div class="card">
+        <div class="card-body">
+            <form>
+                <div class="mb-3">
+                    <label for="paypal_email" class="form-label">Correo de PayPal</label>
+                    <input type="email" class="form-control" id="paypal_email" placeholder="tu@email.com">
+                </div>
+                <div class="mb-3">
+                    <label for="bank_account" class="form-label">Cuenta Bancaria</label>
+                    <input type="text" class="form-control" id="bank_account" placeholder="Número de cuenta">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

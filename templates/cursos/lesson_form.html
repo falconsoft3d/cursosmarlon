@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Crear/Editar Lección{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        {% include 'cursos/_dashboard_sidebar.html' %}
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4">{{ form.instance.pk|yesno:"Editar Lección,Crear Lección" }}</h2>
+                    {% if form.instance.thumbnail %}
+                        <img src="{{ form.instance.thumbnail.url }}" width="80" height="80" class="rounded mb-3" style="object-fit:cover;">
+                    {% else %}
+                        <img src="{% static 'img/default_class.png' %}" width="80" height="80" class="rounded mb-3" style="object-fit:cover;">
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_module" class="form-label">Módulo</label>
+                                {{ form.module }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_title" class="form-label">Título</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-12">
+                                <label for="id_content" class="form-label">Contenido</label>
+                                {{ form.content }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_video_url" class="form-label">URL de Video</label>
+                                {{ form.video_url }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_video_file" class="form-label">Archivo de Video</label>
+                                {{ form.video_file }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_lesson_type" class="form-label">Tipo de Lección</label>
+                                {{ form.lesson_type }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_duration_minutes" class="form-label">Duración (minutos)</label>
+                                {{ form.duration_minutes }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_order" class="form-label">Orden</label>
+                                {{ form.order }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="id_is_free" class="form-label">Gratis</label>
+                                {{ form.is_free }}
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

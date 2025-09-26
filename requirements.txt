@@ -1,0 +1,16 @@
+Django>=4.2,<5.0
+djangorestframework>=3.14
+django-cors-headers>=4.0
+Pillow>=10.0
+python-decouple>=3.8
+psycopg2-binary>=2.9
+stripe>=7.0
+paypalrestsdk>=1.13
+celery>=5.3
+redis>=5.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7
+django-extensions>=3.2
+django-debug-toolbar>=4.2
+whitenoise>=6.5
+gunicorn>=21.2

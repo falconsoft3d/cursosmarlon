@@ -1,0 +1,12 @@
+{% extends 'base/base.html' %}
+{% block title %}Eliminar Módulo{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">¿Estás seguro que deseas eliminar el módulo "{{ object.title }}"?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

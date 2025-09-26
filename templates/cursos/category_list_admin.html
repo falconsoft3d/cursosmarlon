@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+{% block title %}Administrar Categorías{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Administrar Categorías</h2>
+    <a href="{% url 'category_create' %}" class="btn btn-success mb-3">Nueva Categoría</a>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Icono</th>
+                <th>Activa</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>{{ category.icon }}</td>
+                <td>{% if category.is_active %}Sí{% else %}No{% endif %}</td>
+                <td>
+                    <a href="{% url 'category_update' category.pk %}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{% url 'category_delete' category.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center">No hay categorías registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

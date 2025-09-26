@@ -1,0 +1,46 @@
+# Django
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.pot
+*.mo
+*.env
+.env.*
+
+# Entorno virtual
+.venv/
+venv/
+ENV/
+
+# Archivos de media y static
+/media/
+/staticfiles/
+/static/
+
+# Archivos de migraciones
+**/migrations/*
+!**/migrations/__init__.py
+
+# Configuración local
+local_settings.py
+settings_local.py
+
+# Archivos de editor
+.vscode/
+.idea/
+.DS_Store
+
+# Otros
+*.swp
+*.swo
+
+# Node
+node_modules/
+
+# Docker
+*.pid
+docker-compose.override.yml
