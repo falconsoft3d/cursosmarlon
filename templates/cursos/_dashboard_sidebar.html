@@ -1,7 +1,7 @@
     <!-- Eliminado para evitar duplicidad y desorden visual -->
 <div class="col-md-3">
     <div class="list-group mb-4" style="min-width:200px; max-width:220px;">
-    <a href="{% url 'estadisticas' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'estadisticas' %}active{% endif %}">Estadísticas</a>
+    <a href="{% url 'estadisticas' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'estadisticas' %}active{% endif %}">Indicadores</a>
     <a href="{% url 'course_list_admin' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name in 'course_list_admin course_create course_update course_delete' %}active{% endif %}">Cursos</a>
     <a href="{% url 'category_list_admin' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name in 'category_list_admin category_create category_update category_delete' %}active{% endif %}">Categorías</a>
     <a href="{% url 'lesson_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name in 'lesson_list lesson_create lesson_update lesson_delete' %}active{% endif %}">Clases</a>
